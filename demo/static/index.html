@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier Neural Operator for Airfoil Flow Prediction</title>
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FNO Airfoil Flow Predictor</h1>
+            <p>Interactive demo of Fourier Neural Operator for predicting flow around NACA airfoils</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>Reynolds Number</h3>
+                    <div class="slider-container">
+                        <input type="range" id="re-slider" min="3" max="5" step="0.01" value="4">
+                        <span id="re-value">10,000</span>
+                    </div>
+                    <p class="help-text">Range: 10<sup>3</sup> to 10<sup>5</sup></p>
+                </div>
+
+                <div class="control-group">
+                    <h3>Airfoil Type</h3>
+                    <select id="airfoil-select">
+                        <option value="0012">NACA 0012</option>
+                        <option value="2412">NACA 2412</option>
+                        <option value="4412">NACA 4412</option>
+                        <option value="6409">NACA 6409</option>
+                        <option value="0009">NACA 0009</option>
+                        <option value="0015">NACA 0015</option>
+                    </select>
+                    <p class="help-text">NACA 4-digit airfoil type</p>
+                </div>
+
+                <div class="control-group">
+                    <h3>View Type</h3>
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="velocity">Velocity</button>
+                        <button class="view-btn" data-view="pressure">Pressure</button>
+                        <button class="view-btn" data-view="u_velocity">U-Velocity</button>
+                        <button class="view-btn" data-view="v_velocity">V-Velocity</button>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <h3>Flow Metrics</h3>
+                    <div class="metric-item">
+                        <span class="metric-label">Max Velocity:</span>
+                        <span id="max-velocity" class="metric-value">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Min Pressure:</span>
+                        <span id="min-pressure" class="metric-value">-</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Max Pressure:</span>
+                        <span id="max-pressure" class="metric-value">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization-panel">
+                <div class="spinner" id="loading-spinner">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+                <img id="flow-visualization" src="" alt="Flow field visualization">
+                <div id="demo-mode-warning" class="warning-badge" style="display: none">
+                    Demo Mode: Model not loaded
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>About This Demo</h3>
+            <p>
+                This interactive demo uses a Fourier Neural Operator (FNO) to predict steady-state flow around NACA airfoils.
+                The model was trained on data generated from a finite-difference Navier-Stokes solver and can predict complex
+                flow patterns in milliseconds, orders of magnitude faster than traditional CFD methods.
+            </p>
+            <p>
+                <strong>Instructions:</strong> Adjust the Reynolds number slider and select an airfoil type to see how the flow
+                field changes. Use the view buttons to switch between different field visualizations.
+            </p>
+        </div>
+
+        <footer>
+            <p>
+                Fourier Neural Operator for Airfoil Flow Prediction | 
+                Based on <a href="https://github.com/neuraloperator/neuraloperator" target="_blank">neuraloperator</a> |
+                Reference: Li et al., <a href="https://paperswithcode.com/paper/fourier-neural-operator-for-parametric-1" target="_blank">Fourier Neural Operator for Parametric PDEs</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>

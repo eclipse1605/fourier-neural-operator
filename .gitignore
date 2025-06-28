@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Project specific
+data/
+results/
+evaluation_results/
+checkpoints/
+!checkpoints/.gitkeep
+*.npz
+*.npy
+*.h5
+*.hdf5
+*.pth
+*.pt
+*.tar
+*.gz
+*.zip
+*.ckpt
+*.pkl
+
+# Images (except documentation/example images)
+*.png
+*.jpg
+*.jpeg
+*.gif
+!demo/static/*.png
+!demo/static/*.jpg
+!demo/static/*.gif
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.spyderproject
+.spyproject
+.ropeproject
+
+# Logs and temp files
+*.log
+logs/
+*.tmp
+.coverage
+htmlcov/
+.pytest_cache/
+.hypothesis/
