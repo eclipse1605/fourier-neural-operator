@@ -5,10 +5,6 @@ import numpy as np
 
 
 class SpectralConv2d(nn.Module):
-    """
-    Enhanced 2D Fourier layer with comprehensive spectral domain handling.
-    Implements FFT -> Multiplication by weights -> IFFT with full frequency domain coverage.
-    """
     def __init__(self, in_channels, out_channels, modes1, modes2):
         super(SpectralConv2d, self).__init__()
         self.in_channels = in_channels
@@ -39,29 +35,9 @@ class SpectralConv2d(nn.Module):
         )
 
     def compl_mul2d(self, input, weights):
-        """
-        Complex multiplication between input and weights in spectral domain.
-        Optimized implementation using einsum for better performance.
-        
-        Args:
-            input: Complex tensor in spectral domain
-            weights: Complex weights
-            
-        Returns:
-            Complex tensor after multiplication
-        """
         return torch.einsum("bixy,ioxy->boxy", input, weights)
 
     def forward(self, x):
-        """
-        Forward pass with improved implementation for spectral convolution.
-        
-        Args:
-            x: Input tensor [batch, channels, height, width]
-            
-        Returns:
-            Output tensor after spectral convolution
-        """
         batchsize = x.shape[0]
         
                                       
@@ -77,34 +53,13 @@ class SpectralConv2d(nn.Module):
             x_ft[:, :, :self.modes1, :self.modes2],
             self.weights1
         )
-        
-                                                                                              
-                                                                                               
-        
-                                          
+                          
         x = torch.fft.irfft2(out_ft, s=(x.size(-2), x.size(-1)))
         
         return x
 
 
 class FNO2d(nn.Module):
-    """
-    Enhanced Fourier Neural Operator for 2D problems with:
-    - Improved spectral convolution
-    - Batch normalization support
-    - Dropout for uncertainty quantification
-    - Resolution invariance by design
-    
-    Parameters:
-    - in_channels: Number of input channels (e.g., 1 for just velocity magnitude)
-    - out_channels: Number of output channels (e.g., 3 for [u, v, p] fields)
-    - width: Width of the network, number of channels in hidden layers
-    - modes1, modes2: Number of Fourier modes to keep in each dimension
-    - n_layers: Number of Fourier layers
-    - device: Device to place the model on ('cuda', 'cuda:0', 'cpu', etc.)
-    - use_bn: Whether to use batch normalization
-    - dropout_rate: Dropout rate for uncertainty quantification (0 to disable)
-    """
     def __init__(self, in_channels=1, out_channels=3, width=32, modes1=12, modes2=12, 
                  n_layers=4, device=None, use_bn=True, dropout_rate=0.0):
         super(FNO2d, self).__init__()
@@ -157,20 +112,7 @@ class FNO2d(nn.Module):
                               
         self.to(self.device)
     
-    def forward(self, x, return_uncertainty=False, n_samples=10):
-        """
-        Enhanced forward pass of the FNO model with support for uncertainty quantification
-        
-        Parameters:
-        - x: Input tensor of shape [batch_size, in_channels, height, width]
-        - return_uncertainty: Whether to return prediction uncertainty (requires dropout > 0)
-        - n_samples: Number of Monte Carlo samples for uncertainty estimation
-        
-        Returns:
-        - Output tensor of shape [batch_size, out_channels, height, width] if not return_uncertainty
-        - Tuple of (mean, std) tensors if return_uncertainty is True
-        """
-                                        
+    def forward(self, x, return_uncertainty=False, n_samples=10):                                        
         x = x.to(self.device)
         
                                                         
@@ -217,18 +159,6 @@ class FNO2d(nn.Module):
         return x
         
     def _forward_with_uncertainty(self, x, n_samples=10):
-        """
-        Forward pass with Monte Carlo dropout for uncertainty quantification
-        
-        Parameters:
-        - x: Input tensor
-        - n_samples: Number of Monte Carlo samples
-        
-        Returns:
-        - mean: Mean prediction
-        - std: Standard deviation of predictions
-        """
-                                         
         was_training = self.training
         self.training = True
         
@@ -253,29 +183,15 @@ class FNO2d(nn.Module):
         return mean, std
     
     def count_params(self):
-        """Count total parameters in the model"""
         total_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         return total_params
     
     def to_device(self, device):
-        """Move model to specific device"""
         self.device = torch.device(device)
         self.to(self.device)
         return self
     
     def analyze_modes(self, input_data, layer_idx=0, top_k=5):
-        """
-        Analyze which Fourier modes are most important for this model's predictions.
-        
-        Parameters:
-        - input_data: Sample input tensor [batch, channels, height, width]
-        - layer_idx: Which Fourier layer to analyze (default: first layer)
-        - top_k: Number of top modes to report
-        
-        Returns:
-        - Dictionary with mode analysis results
-        """
-                                      
         was_training = self.training
         self.eval()
         
@@ -324,16 +240,6 @@ class FNO2d(nn.Module):
             }
     
     def test_resolution_invariance(self, input_data, scale_factors=[0.5, 1.0, 2.0]):
-        """
-        Test the resolution invariance property of the FNO model.
-        
-        Parameters:
-        - input_data: Sample input tensor [batch, channels, height, width]
-        - scale_factors: List of scaling factors to test
-        
-        Returns:
-        - Dictionary with resolution invariance test results
-        """
         results = {}
         original_shape = input_data.shape
         was_training = self.training
@@ -378,18 +284,6 @@ class FNO2d(nn.Module):
 
 
 def divergence(velocity_field, mask=None, higher_order=False):
-    """
-    Compute the divergence of a 2D velocity field with optional higher-order accuracy.
-    Used for incompressibility constraint in physics-informed loss functions.
-    
-    Parameters:
-    - velocity_field: Tensor of shape [batch_size, 2, height, width] where the first channel is u and second is v
-    - mask: Optional binary mask for the airfoil (1 for fluid, 0 for solid)
-    - higher_order: Whether to use 4th-order central differencing
-    
-    Returns:
-    - div: Divergence of the velocity field
-    """
     device = velocity_field.device
     batch_size = velocity_field.shape[0]
     u = velocity_field[:, 0]                           
