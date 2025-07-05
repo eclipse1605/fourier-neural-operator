@@ -262,7 +262,6 @@ footer {
     font-weight: bold;
 }
 
-/* Responsive design */
 @media (max-width: 900px) {
     .main-content {
         flex-direction: column;

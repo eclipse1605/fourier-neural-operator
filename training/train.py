@@ -20,25 +20,6 @@ from training.dataset import get_dataloader
 
 
 def train_epoch(model, train_loader, optimizer, device, args, scaler=None):
-    """
-    Enhanced training function with support for:
-    - Mixed precision training
-    - Multi-resolution training
-    - Higher-order physics constraints
-    - Improved logging
-    
-    Parameters:
-    - model: The enhanced FNO model
-    - train_loader: DataLoader for training data
-    - optimizer: Optimizer
-    - device: Device to use (cuda/cpu)
-    - args: Command line arguments containing training parameters
-    - scaler: GradScaler for mixed precision training
-    
-    Returns:
-    - avg_loss: Average loss over the epoch
-    - metrics: Dictionary with detailed training metrics
-    """
     model.train()
     total_loss = 0.0
     total_mse = 0.0
@@ -309,14 +290,6 @@ def validate(model, val_loader, device, args):
 
 
 def plot_losses(train_losses, val_losses, save_path):
-    """
-    Plot training and validation losses.
-    
-    Parameters:
-    - train_losses: List of training losses
-    - val_losses: List of validation losses
-    - save_path: Path to save the plot
-    """
     plt.figure(figsize=(10, 6))
     plt.plot(train_losses, 'b-', label='Training Loss')
     plt.plot(val_losses, 'r-', label='Validation Loss')
@@ -330,17 +303,6 @@ def plot_losses(train_losses, val_losses, save_path):
 
 
 def save_model(model, optimizer, scheduler, epoch, metrics, model_path):
-    """
-    Save the model checkpoint.
-    
-    Parameters:
-    - model: The FNO model
-    - optimizer: Optimizer
-    - scheduler: Learning rate scheduler
-    - epoch: Current epoch
-    - metrics: Validation metrics
-    - model_path: Path to save the model
-    """
     torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
@@ -351,17 +313,7 @@ def save_model(model, optimizer, scheduler, epoch, metrics, model_path):
 
 
 def train_model(args):
-    """
-    Enhanced training function with multi-resolution training, improved loss functions,
-    and support for the enhanced FNO model features.
-    
-    Parameters:
-    - args: Command-line arguments
-    
-    Returns:
-    - model: Trained model
-    """
-                                          
+                     
     if torch.cuda.is_available():
         if args.gpu >= 0:
             device = torch.device(f'cuda:{args.gpu}')

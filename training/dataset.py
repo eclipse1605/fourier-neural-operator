@@ -6,40 +6,14 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
 
-class AirfoilFlowDataset(Dataset):
-    """
-    Enhanced dataset for loading airfoil flow data for FNO training with data augmentation.
-    
-    Each sample consists of:
-    - Input: Reynolds number and airfoil mask
-    - Target: u, v velocity components and pressure field
-    
-    Features:
-    - Normalization of input/output fields
-    - Data augmentation (rotation, flipping) for training set
-    - Multi-resolution support
-    """
-    
+class AirfoilFlowDataset(Dataset):    
     def __init__(self, data_dir, split='train', normalize=True, stats_file=None, augment=True):
-        """
-        Initialize the dataset.
-        
-        Parameters:
-        - data_dir: Base directory containing the dataset
-        - split: 'train', 'val', or 'test'
-        - normalize: Whether to normalize the data
-        - stats_file: Path to normalization statistics file, if None uses {data_dir}/normalization_stats.npz
-        """
         self.data_dir = os.path.join(data_dir, split)
         self.split = split
         self.normalize = normalize
         self.augment = augment and split == 'train'                              
-        
-                                    
         self.file_list = [f for f in os.listdir(self.data_dir) if f.endswith('.npz') and f.startswith('case_')]
         self.file_list.sort()                              
-        
-                                                 
         if normalize:
             if stats_file is None:
                                                                                                      
@@ -57,22 +31,9 @@ class AirfoilFlowDataset(Dataset):
                 raise FileNotFoundError(f"Normalization statistics file not found: {stats_file}")
     
     def __len__(self):
-        """Return the number of samples in the dataset"""
         return len(self.file_list)
     
     def apply_augmentation(self, inputs, targets, mask):
-        """
-        Apply data augmentation to improve model generalization
-        
-        Parameters:
-        - inputs: Input tensor [channels, height, width]
-        - targets: Target tensor [channels, height, width]
-        - mask: Airfoil mask [height, width]
-        
-        Returns:
-        - Augmented inputs, targets, mask
-        """
-                                                  
         if isinstance(inputs, np.ndarray):
             inputs = torch.from_numpy(inputs)
         if isinstance(targets, np.ndarray):
@@ -112,8 +73,6 @@ class AirfoilFlowDataset(Dataset):
         return inputs, targets, mask
         
     def __getitem__(self, idx):
-        """Get a sample from the dataset with optional augmentation"""
-                             
         data_path = os.path.join(self.data_dir, self.file_list[idx])
         data = np.load(data_path)
         
@@ -129,21 +88,13 @@ class AirfoilFlowDataset(Dataset):
             u = (u - self.stats['u_mean']) / self.stats['u_std']
             v = (v - self.stats['v_mean']) / self.stats['v_std']
             p = (p - self.stats['p_mean']) / self.stats['p_std']
-        
-                                                       
-                                            
+                           
         Re_normalized = (np.log10(Re) - 3) / 2
-        
-                                                                
         Re_channel = np.ones_like(mask) * Re_normalized
-        
-                              
         inputs = np.stack([Re_channel, mask], axis=0)
-        
-                               
+                    
         targets = np.stack([u, v, p], axis=0)
-        
-                                                         
+                                           
         targets[0] *= mask              
         targets[1] *= mask              
         targets[2] *= mask            
@@ -177,32 +128,14 @@ class AirfoilFlowDataset(Dataset):
 
 
 def get_dataloader(data_dir, batch_size=16, split='train', normalize=True, augment=True, num_workers=4, **kwargs):
-    """
-    Create a DataLoader for the airfoil flow dataset.
-    
-    Parameters:
-    - data_dir: Base directory containing the dataset
-    - batch_size: Batch size
-    - split: 'train', 'val', or 'test'
-    - normalize: Whether to normalize the data
-    - augment: Whether to use data augmentation (only applies to training set)
-    - num_workers: Number of worker processes
-    - **kwargs: Additional arguments for DataLoader
-    
-    Returns:
-    - dataloader: PyTorch DataLoader
-    """
     dataset = AirfoilFlowDataset(data_dir, split, normalize, augment=augment)
-    
-                                                         
+                                              
     loader_args = {
         'batch_size': batch_size,
         'shuffle': (split == 'train'),
         'num_workers': num_workers,
         'pin_memory': True
     }
-    
-                                          
     loader_args.update(kwargs)
     
     dataloader = DataLoader(dataset, **loader_args)

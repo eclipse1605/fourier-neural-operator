@@ -1,13 +1,3 @@
-"""
-Inference module for Fourier Neural Operator
-
-This module handles:
-1. Loading trained FNO models
-2. Running inference on test cases
-3. Exporting predictions for visualization
-4. Uncertainty quantification via Monte Carlo dropout
-"""
-
 import os
 import torch
 import numpy as np
@@ -24,24 +14,11 @@ from model.fno import FNO2d
 from training.dataset import AirfoilFlowDataset
 from torch.utils.data import DataLoader
 
-class Inference:
-    """
-    FNO Inference class for running inference, visualization, and analysis
-    """
-    
+class Inference:    
     def __init__(self, 
                  model_path, 
                  data_dir='./data',
                  device=None):
-        """
-        Initialize the inference module
-        
-        Parameters:
-        - model_path: Path to saved model checkpoint
-        - data_dir: Directory containing the dataset
-        - device: Device to run inference on (cpu or cuda)
-        """
-                    
         if device is None:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         else:
@@ -76,18 +53,7 @@ class Inference:
                               
         self.inference_times = []
         
-    def predict_single(self, inputs, enable_dropout=False):
-        """
-        Run inference on a single input
-        
-        Parameters:
-        - inputs: Input tensor [batch_size, channels, height, width]
-        - enable_dropout: Whether to enable dropout for uncertainty quantification
-        
-        Returns:
-        - outputs: Output tensor [batch_size, channels, height, width]
-        """
-                               
+    def predict_single(self, inputs, enable_dropout=False):                               
         inputs = inputs.to(self.device)
         
                           
@@ -109,19 +75,6 @@ class Inference:
         return outputs
     
     def predict_batch(self, dataloader, return_targets=True, enable_dropout=False):
-        """
-        Run inference on a batch of inputs
-        
-        Parameters:
-        - dataloader: PyTorch DataLoader containing inputs
-        - return_targets: Whether to return targets for comparison
-        - enable_dropout: Whether to enable dropout for uncertainty quantification
-        
-        Returns:
-        - predictions: List of output tensors
-        - targets: List of target tensors (if return_targets=True)
-        - masks: List of mask tensors
-        """
         predictions = []
         targets = []
         masks = []
@@ -160,17 +113,6 @@ class Inference:
             return predictions, masks
     
     def uncertainty_quantification(self, inputs, n_samples=50):
-        """
-        Perform uncertainty quantification with Monte Carlo dropout
-        
-        Parameters:
-        - inputs: Input tensor [batch_size, channels, height, width]
-        - n_samples: Number of MC samples to take
-        
-        Returns:
-        - mean: Mean prediction [batch_size, channels, height, width]
-        - std: Standard deviation [batch_size, channels, height, width]
-        """
         samples = []
         
                         
@@ -192,18 +134,6 @@ class Inference:
         return mean, std
     
     def performance_metrics(self, predictions, targets, masks):
-        """
-        Calculate performance metrics
-        
-        Parameters:
-        - predictions: List of prediction tensors
-        - targets: List of target tensors
-        - masks: List of mask tensors
-        
-        Returns:
-        - metrics: Dictionary of performance metrics
-        """
-                             
         predictions = torch.cat(predictions, dim=0)
         targets = torch.cat(targets, dim=0)
         masks = torch.cat(masks, dim=0)
@@ -245,17 +175,6 @@ class Inference:
         return metrics
     
     def run_test_inference(self, batch_size=16, split='test'):
-        """
-        Run inference on the test set
-        
-        Parameters:
-        - batch_size: Batch size for inference
-        - split: Dataset split to use ('train', 'val', or 'test')
-        
-        Returns:
-        - metrics: Performance metrics
-        """
-                                       
         dataset = AirfoilFlowDataset(self.data_dir, split=split, normalize=True)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=4)
         

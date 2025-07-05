@@ -14,21 +14,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from inference.inference import Inference
 
-def measure_inference_time(model, input_tensor, warmup=10, trials=100, device='cuda'):
-    """
-    Measure inference time for a model
-    
-    Parameters:
-    - model: PyTorch model
-    - input_tensor: Input tensor
-    - warmup: Number of warmup runs
-    - trials: Number of timed trials
-    - device: Device to run inference on
-    
-    Returns:
-    - times: List of inference times in milliseconds
-    """
-                          
+def measure_inference_time(model, input_tensor, warmup=10, trials=100, device='cuda'):                          
     input_tensor = input_tensor.to(device)
     
                  
@@ -59,17 +45,6 @@ def measure_inference_time(model, input_tensor, warmup=10, trials=100, device='c
     return times
 
 def measure_memory_usage(model, input_tensor, device='cuda'):
-    """
-    Measure memory usage for a model
-    
-    Parameters:
-    - model: PyTorch model
-    - input_tensor: Input tensor
-    - device: Device to run inference on
-    
-    Returns:
-    - memory_stats: Dictionary of memory statistics
-    """
                             
     if device == 'cuda':
         torch.cuda.empty_cache()
@@ -114,19 +89,6 @@ def measure_memory_usage(model, input_tensor, device='cuda'):
 def benchmark_resolution_scaling(inference, base_resolution=(64, 64), 
                                scale_factors=[0.5, 1.0, 1.5, 2.0, 3.0, 4.0],
                                batch_size=1, trials=100):
-    """
-    Benchmark model performance across different resolutions
-    
-    Parameters:
-    - inference: Inference object
-    - base_resolution: Base resolution (height, width)
-    - scale_factors: Resolution scaling factors to test
-    - batch_size: Batch size for inference
-    - trials: Number of trials for timing
-    
-    Returns:
-    - results: Dictionary of benchmarking results
-    """
     results = {}
     
                                                            
@@ -173,18 +135,6 @@ def benchmark_resolution_scaling(inference, base_resolution=(64, 64),
 def benchmark_batch_size_scaling(inference, resolution=(64, 64), 
                                batch_sizes=[1, 2, 4, 8, 16, 32, 64],
                                trials=100):
-    """
-    Benchmark model performance across different batch sizes
-    
-    Parameters:
-    - inference: Inference object
-    - resolution: Input resolution (height, width)
-    - batch_sizes: Batch sizes to test
-    - trials: Number of trials for timing
-    
-    Returns:
-    - results: Dictionary of benchmarking results
-    """
     results = {}
     
                                                            
@@ -246,14 +196,6 @@ def benchmark_batch_size_scaling(inference, resolution=(64, 64),
     return results
 
 def plot_benchmark_results(resolution_results, batch_results, save_dir='./results/benchmarks'):
-    """
-    Plot benchmarking results
-    
-    Parameters:
-    - resolution_results: Results from resolution scaling benchmark
-    - batch_results: Results from batch size scaling benchmark
-    - save_dir: Directory to save plots
-    """
     os.makedirs(save_dir, exist_ok=True)
     
                                                  

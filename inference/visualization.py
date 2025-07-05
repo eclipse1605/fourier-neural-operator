@@ -1,14 +1,3 @@
-"""
-Visualization module for Fourier Neural Operator predictions
-
-This module provides:
-1. Side-by-side comparisons of predicted and ground truth fields
-2. Error visualization
-3. Uncertainty visualization
-4. Streamline plotting for fluid flow
-5. Animation capabilities for time-dependent flows
-"""
-
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,17 +12,7 @@ import sys
 sys.path.append(str(Path(__file__).parent.parent))
 
 class FlowVisualizer:
-    """
-    Visualization tools for airfoil flow predictions
-    """
-    
     def __init__(self, save_dir='./results/visualizations'):
-        """
-        Initialize the visualizer
-        
-        Parameters:
-        - save_dir: Directory to save visualizations
-        """
         self.save_dir = save_dir
         os.makedirs(save_dir, exist_ok=True)
         
@@ -47,26 +26,12 @@ class FlowVisualizer:
         self.uncertainty_cmap = 'inferno'
     
     def _to_numpy(self, tensor):
-        """Convert tensor to numpy array"""
         if isinstance(tensor, torch.Tensor):
             return tensor.detach().cpu().numpy()
         return tensor
     
     def plot_field_comparison(self, prediction, target, mask, index=0, 
                              show=True, save=False, filename=None):
-        """
-        Plot side-by-side comparison of predicted and ground truth fields
-        
-        Parameters:
-        - prediction: Prediction tensor [batch, channels, height, width]
-        - target: Target tensor [batch, channels, height, width]
-        - mask: Mask tensor [batch, height, width]
-        - index: Index of the sample to visualize
-        - show: Whether to display the plot
-        - save: Whether to save the plot
-        - filename: Filename to save the plot
-        """
-                          
         prediction = self._to_numpy(prediction)
         target = self._to_numpy(target)
         mask = self._to_numpy(mask)
@@ -218,21 +183,6 @@ class FlowVisualizer:
     
     def plot_streamlines(self, u, v, mask, prediction=True, target=None, 
                         density=2, index=0, show=True, save=False, filename=None):
-        """
-        Plot streamlines for fluid flow
-        
-        Parameters:
-        - u: u-velocity tensor [batch, height, width] or [height, width]
-        - v: v-velocity tensor [batch, height, width] or [height, width]
-        - mask: Mask tensor [batch, height, width] or [height, width]
-        - prediction: Whether u, v are predictions (True) or ground truth (False)
-        - target: If prediction is True, provide target (u, v) for comparison
-        - density: Density of streamlines
-        - index: Index of the sample to visualize if batch provided
-        - show: Whether to display the plot
-        - save: Whether to save the plot
-        - filename: Filename to save the plot
-        """
                           
         u = self._to_numpy(u)
         v = self._to_numpy(v)
@@ -331,20 +281,6 @@ class FlowVisualizer:
     
     def plot_physical_correctness(self, u, v, mask, index=0, h=1.0,
                                 show=True, save=False, filename=None):
-        """
-        Analyze physical correctness of the flow field (divergence)
-        
-        Parameters:
-        - u: u-velocity tensor [batch, height, width] or [height, width]
-        - v: v-velocity tensor [batch, height, width] or [height, width]
-        - mask: Mask tensor [batch, height, width] or [height, width]
-        - index: Index of the sample to visualize
-        - h: Grid spacing
-        - show: Whether to display the plot
-        - save: Whether to save the plot
-        - filename: Filename to save the plot
-        """
-                          
         u = self._to_numpy(u)
         v = self._to_numpy(v)
         mask = self._to_numpy(mask)
@@ -420,18 +356,6 @@ class FlowVisualizer:
     
     def visualize_test_case(self, prediction, target, mask, index=0,
                            show=True, save=True, save_dir=None):
-        """
-        Create comprehensive visualization for a test case
-        
-        Parameters:
-        - prediction: Prediction tensor [batch, channels, height, width]
-        - target: Target tensor [batch, channels, height, width]
-        - mask: Mask tensor [batch, height, width]
-        - index: Index of the sample to visualize
-        - show: Whether to display plots
-        - save: Whether to save plots
-        - save_dir: Directory to save plots (if None, uses self.save_dir)
-        """
         if save_dir is not None:
             orig_save_dir = self.save_dir
             self.save_dir = save_dir
@@ -471,19 +395,6 @@ class FlowVisualizer:
             
     def visualize_uncertainty_analysis(self, mean, std, target, mask, index=0,
                                      show=True, save=True, save_dir=None):
-        """
-        Create comprehensive uncertainty visualization for a test case
-        
-        Parameters:
-        - mean: Mean prediction tensor [batch, channels, height, width]
-        - std: Standard deviation tensor [batch, channels, height, width]
-        - target: Target tensor [batch, channels, height, width]
-        - mask: Mask tensor [batch, height, width]
-        - index: Index of the sample to visualize
-        - show: Whether to display plots
-        - save: Whether to save plots
-        - save_dir: Directory to save plots (if None, uses self.save_dir)
-        """
         if save_dir is not None:
             orig_save_dir = self.save_dir
             self.save_dir = save_dir
